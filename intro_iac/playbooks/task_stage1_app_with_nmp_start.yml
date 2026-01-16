@@ -1,0 +1,38 @@
+---
+- name: install app dependencies and run app
+  hosts: app
+  become: yes
+
+  tasks:
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Install NodeJS and npm
+      apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+        update_cache: yes
+
+    - name: Copy app folder to target node
+      copy:
+        src: ./app/
+        dest: /home/ubuntu/app/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Install npm dependencies
+      shell: npm install
+      args:
+        chdir: /home/ubuntu/app/
+
+    - name: Start app
+      shell: npm start
+      args:
+        chdir: /home/ubuntu/app/
